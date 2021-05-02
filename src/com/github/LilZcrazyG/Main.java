@@ -1,48 +1,58 @@
 package com.github.LilZcrazyG;
 
 import com.github.LilZcrazyG.GameEngine.GameEngine;
-import com.github.LilZcrazyG.GameEngine.GameStateManager;
-import com.github.LilZcrazyG.GameEngine.GraphicsEngine;
-import com.github.LilZcrazyG.GameEngine.InputManager;
+import com.github.LilZcrazyG.GameEngine.GameEngine.GraphicsEngine;
+import com.github.LilZcrazyG.GameEngine.GameEngine.InputManager;
+import com.github.LilZcrazyG.GameEngine.GameEngine.InputManager.KeyListener;
+import com.github.LilZcrazyG.GameEngine.GameEngine.GameStateManager;
+import com.github.LilZcrazyG.GameEngine.GameEngine.GameStateManager.GameState;
+import com.github.LilZcrazyG.GameEngine.GameEngine.WindowEngine;
+import com.github.LilZcrazyG.GameEngine.GameEngine.WindowEngine.Window;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 
 public class Main {
-    static GameStateManager gameStateManager = new GameStateManager() {
-        @Override
-        public void tick() {
-        }
 
-        @Override
-        public void render() {
-            GraphicsEngine.clearScreen();
-            GraphicsEngine.show();
-        }
-    };
-    static InputManager inputManager = new InputManager() {
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            InputManager.setKey( e.getKeyChar(), true );
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            InputManager.setKey( e.getKeyChar(), false );
-        }
-    };
+    static int x = 0;
+    static int y = 0;
 
     public static void main(String[] args) {
-        InputManager.initialize();
-        GameEngine.createWindow( 200, 200, "Hello :)" );
+        WindowEngine.createWindow( "Game Window", new Window( "Game Window ") );
+        GraphicsEngine.initialize( WindowEngine.getWindow( "Game Window" ) );
+        InputManager.createKeyListener( WindowEngine.getWindow( "Game Window" ), new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+                System.out.println(e.getKeyChar());
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+
+        } );
+        GameStateManager.createState( "primary", new GameState() {
+            @Override
+            public void tick() {
+                x+=1;
+            }
+            @Override
+            public void render() {
+                GraphicsEngine.clearScreen();
+                GraphicsEngine.setColor( Color.WHITE );
+                GraphicsEngine.rectangleFilled( x, y, 50, 50 );
+                GraphicsEngine.show();
+            }
+        } );
+        GameStateManager.setCurrentState( "primary" );
         GraphicsEngine.setBackgroundColor( Color.BLACK );
-        GameEngine.addInputManager( inputManager );
-        GameEngine.run( 1000/60, gameStateManager );
+        GameEngine.run();
     }
 }
